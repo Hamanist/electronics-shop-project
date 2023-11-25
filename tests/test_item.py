@@ -34,6 +34,10 @@ def test_len_name(item_data):
     assert item_data == item_data
 
 
+
+
+
+
 def test_string_to_number():
     assert Item.string_to_number('2.0') == 2
     assert Item.string_to_number('3') == 3
@@ -42,3 +46,14 @@ def test_string_to_number():
 
 def test_instantiate_from_csv():
     pass
+
+
+def test_repr():
+    item = Item("Смартфон", 10000, 20)
+    assert item.__repr__() == "Item('Смартфон', 10000, 20)"
+
+
+def test_srt():
+    item = Item("Смартфон", 10000, 20)
+    assert item.__str__() == "Смартфон"
+
