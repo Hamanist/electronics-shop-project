@@ -1,4 +1,13 @@
 import csv
+import os.path
+
+
+class InstantiateCSVError(Exception):
+    def __init__(self):
+        self.message = 'Файл item.csv поврежден'
+
+    def __str__(self):
+        return self.message
 
 
 class Item:
@@ -29,7 +38,8 @@ class Item:
     def name(self, new_name):
         if len(new_name) >= 10:
             self.__name = new_name[:10]
-        self.__name = new_name
+        else:
+            self.__name = new_name
 
     def calculate_total_price(self) -> float:
         """
@@ -47,11 +57,21 @@ class Item:
 
     @classmethod
     def instantiate_from_csv(cls, data):
-        with open(data, 'r', encoding='cp1251') as file:
-            reader = csv.DictReader(file)
-            Item.all.clear()
-            for row in reader:
-                cls(row['name'], row['price'], row['quantity'])
+        path = os.path.exists(data)
+        if not path:
+            raise FileNotFoundError('Отсутствует файл item.csv')
+        else:
+            with open(data, 'r', encoding='cp1251') as file:
+                reader = csv.DictReader(file)
+                Item.all.clear()
+                for row in reader:
+                    if 'name' not in row:
+                        raise InstantiateCSVError()
+                    if 'price' not in row:
+                        raise InstantiateCSVError()
+                    if 'quantity' not in row:
+                        raise InstantiateCSVError()
+                    cls(row['name'], row['price'], row['quantity'])
 
     @staticmethod
     def string_to_number(value):

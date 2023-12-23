@@ -1,6 +1,6 @@
 """Здесь надо написать тесты с использованием pytest для модуля item."""
 import pytest
-from src.item import Item
+from src.item import Item, InstantiateCSVError
 
 
 @pytest.fixture
@@ -26,16 +26,12 @@ def test_name(item_data):
     assert item_data.name == 'Телефон'
 
 
-def test_len_name(item_data):
-    item_data = "СуперСмартфон"
-    if len(item_data) >= 10:
-        item_data = item_data[:10]
-        assert item_data == 'СуперСмарт'
-    assert item_data == item_data
-
-
-
-
+def test_len_name():
+    item_1 = Item('Смартфон', 5_000, 5)
+    item_1.name = 'СуперСмартфон'
+    assert len(item_1.name) == 10
+    item_1.name = 'Супер'
+    assert len(item_1.name) == 5
 
 
 def test_string_to_number():
@@ -44,16 +40,29 @@ def test_string_to_number():
     assert Item.string_to_number('4.6') == 4
 
 
-def test_instantiate_from_csv():
-    pass
-
-
 def test_repr():
     item = Item("Смартфон", 10000, 20)
     assert item.__repr__() == "Item('Смартфон', 10000, 20)"
+    assert type(repr(item)) == str
 
 
 def test_srt():
     item = Item("Смартфон", 10000, 20)
     assert item.__str__() == "Смартфон"
+    assert len(str(item)) == 8
 
+
+def test_raise():
+    item = Item("Смартфон", 10000, 20)
+    with pytest.raises(FileNotFoundError):
+        item.instantiate_from_csv("tutu.csv")
+
+
+def test_raise_2():
+    item = Item("Смартфон", 10000, 20)
+    lines_1 = 'name,price \n'
+    lines_2 = 'Смартфон,100 \n'
+    with open('../src/tests_for_items.csv', 'w') as file:
+        file.writelines([lines_1, lines_2])
+    with pytest.raises(InstantiateCSVError, match='Файл item.csv поврежден'):
+        item.instantiate_from_csv('../src/tests_for_items.csv')
