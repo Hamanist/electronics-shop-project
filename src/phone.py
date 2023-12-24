@@ -14,8 +14,8 @@ class Phone(Item):
     def number_of_sim(self, zero_sim):
         if not isinstance(zero_sim, int):
             raise ValueError('SIM-карты должны быть целым числом')
-        if zero_sim <= 0:
-             self.__number_of_sim = ValueError('Количество физических SIM-карт должно быть больше нуля.')
+        if not zero_sim:
+            raise ValueError('Количество физических SIM-карт должно быть больше нуля.')
         else:
             self.__number_of_sim = zero_sim
 
